@@ -1,0 +1,112 @@
+version: '3'
+networks:
+  # Create Network --------------------------
+  default:
+    ipam:
+      config:
+        - subnet: 192.0.0.0/24
+
+services:
+  # Web Server ------------------------------
+  nginx:
+    container_name: nginx
+    restart: ${DOCKER_RESTART}
+    image: nginx:stable-alpine
+    env_file:
+      - .env
+    working_dir: /www
+    ports:
+      - "80:80"
+    volumes:
+      - ./server/nginx/templates:/etc/nginx/templates:ro
+      - ${DOCUMENTROOT}:/www:delegated
+    networks:
+      default:
+
+  # PHP FPM ---------------------------------
+  php-fpm:
+    container_name: php-fpm
+    restart: ${DOCKER_RESTART}
+    build:
+      context: ./server/php
+      dockerfile: ./Dockerfile
+    env_file:
+      - .env
+    user: ${SERVER_UID}:${SERVER_GID}
+    volumes:
+      - ./server/php/fpm.d:/usr/local/etc/php-fpm.d:ro
+      - ${DOCUMENTROOT}:/www:delegated
+    networks:
+      default:
+    # ports:
+    #   - "9000:9000" # Expose port fpm
+
+  # Mailhog ---------------------------------
+  mailhog:
+    container_name: mailhog
+    restart: ${DOCKER_RESTART}
+    image: mailhog/mailhog
+    env_file:
+      - .env
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      default:
+
+  # MariaDB ---------------------------------
+  mariadb:
+    container_name: mariadb
+    restart: ${DOCKER_RESTART}
+    image: mariadb:latest
+    env_file:
+      - .env
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./server/mariadb/my.cnf:/etc/mysql/my.cnf:ro
+      - ./server/mariadb/data:/var/lib/mysql
+    networks:
+      default:
+
+  # MariaDB ---------------------------------
+  postgres:
+    container_name: postgres
+    restart: ${DOCKER_RESTART}
+    image: postgres:alpine
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./server/postgres/data:/var/lib/postgresql/data
+    networks:
+      default:
+
+  # MongoDB ---------------------------------
+  mongodb:
+    container_name: mongodb
+    restart: ${DOCKER_RESTART}
+    image: mongo:bionic
+    env_file:
+      - .env
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./server/mongodb/data:/data/db
+    networks:
+      default:
+
+  # RabbitMQ --------------------------------
+  rabbitmq:
+    container_name: rabbitmq
+    restart: ${DOCKER_RESTART}
+    image: rabbitmq:management-alpine
+    env_file:
+      - .env
+    ports: 
+      - "15672:15672"
+    volumes: 
+      - ./server/rabbitmq/data:/var/lib/rabbitmq
+    networks: 
+      default:
