@@ -24,10 +24,31 @@ docker start nginx php-fpm redis
 - RabbitMQ (management latest)
 - Mailhog (latest)
 
+## How to install yii
+```sh
+docker exec -it php-fpm sh
+composer create-project --prefer-dist yiisoft/yii2-app-basic yii
+exit
+```
+
+## How to install laravel
+```sh
+docker exec -it php-fpm sh
+composer create-project laravel/laravel laravel
+exit
+```
+
 ## How to use composer
 ```sh
 docker exec -it php-fpm sh
 cd  to-path-your-project
 composer install
 exit
+```
+
+## How update config a service
+If you need update config a service like parameter on php-fpm. Edit on file server/php/fpm.d/www.conf and then rebuild service:
+```sh
+docker-compose stop php-fpm
+docker-compose up -d --build php-fpm
 ```
