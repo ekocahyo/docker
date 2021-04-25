@@ -47,7 +47,7 @@ exit
 ```
 
 ## How update config a service
-If you need update config a service like parameter on php-fpm. change the "server/php/fpm.d/www.conf" file and then rebuild service:
+If you need update config a service like parameter on php-fpm. change the ``server/php/fpm.d/www.conf`` file and then rebuild service:
 ```sh
 docker-compose stop php-fpm
 docker-compose up -d --build php-fpm
