@@ -1,4 +1,4 @@
-# Docker for local development
+# Docker for local development 
 ## How to use!
 Before clone, you must install docker engine and docker-compose. Open your terminal and type this command:
 ```sh
